@@ -14,7 +14,7 @@
  */
 
 import { isAnIpAddress } from "./utils";
-import { URL } from "react-native-url-polyfill";
+import { URL as PolyfillURL } from 'react-native-url-polyfill';
 
 export default class NormalisedURLDomain {
     private value: string;
@@ -32,11 +32,11 @@ function normaliseURLDomainOrThrowError(input: string, ignoreProtocol = false): 
     input = input.trim();
     try {
         if (!input.startsWith("http://") && !input.startsWith("https://")) {
-            throw new Error("converting to proper URL");
+            throw new Error("converting to proper PolyfillURL");
         }
 
-        // @ts-ignore (Typescript complains that URL does not expect a parameter in constructor even though it does for react-native-url-polyfill)
-        const urlObj: any = new URL(input);
+        // @ts-ignore (Typescript complains that PolyfillURL does not expect a parameter in constructor even though it does for react-native-url-polyfill)
+        const urlObj: any = new PolyfillURL(input);
         if (ignoreProtocol) {
             if (urlObj.hostname.startsWith("localhost") || isAnIpAddress(urlObj.hostname)) {
                 input = "http://" + urlObj.host;
@@ -54,7 +54,7 @@ function normaliseURLDomainOrThrowError(input: string, ignoreProtocol = false): 
         throw new Error("Please provide a valid domain name");
     }
 
-    // not a valid URL
+    // not a valid PolyfillURL
     if (input.indexOf(".") === 0) {
         input = input.substr(1);
     }
@@ -66,10 +66,10 @@ function normaliseURLDomainOrThrowError(input: string, ignoreProtocol = false): 
         !input.startsWith("https://")
     ) {
         input = "https://" + input;
-        // at this point, it should be a valid URL. So we test that before doing a recursive call
+        // at this point, it should be a valid PolyfillURL. So we test that before doing a recursive call
         try {
-            // @ts-ignore (Typescript complains that URL does not expect a parameter in constructor even though it does for react-native-url-polyfill)
-            new URL(input);
+            // @ts-ignore (Typescript complains that PolyfillURL does not expect a parameter in constructor even though it does for react-native-url-polyfill)
+            new PolyfillURL(input);
             return normaliseURLDomainOrThrowError(input, true);
 
             // eslint-disable-next-line no-empty
